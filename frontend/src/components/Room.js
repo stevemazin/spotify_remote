@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Grid, Button, ButtonGroup, Typography } from "@material-ui/core";
 
 export default class Room extends Component {
   constructor(props) {
@@ -12,10 +13,25 @@ export default class Room extends Component {
     this.getRoomDetails();
   }
 
+  leaveBtnPressed = () => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    };
+    fetch("/api/leave-room", requestOptions).then((_res) => {
+      this.props.leaveRoomCallback();
+      this.props.history.push("/");
+    });
+  };
+
   getRoomDetails = () => {
     // This method fetches data  about a single room from the backend
     fetch("/api/get-room" + "?code=" + this.roomCode)
       .then((response) => {
+        if (!response.ok) {
+          this.props.leaveRoomCallback();
+          this.props.history.push("/");
+        }
         return response.json();
       })
       .then((data) => {
@@ -28,12 +44,37 @@ export default class Room extends Component {
   };
   render() {
     return (
-      <div>
-        <h3>{this.roomCode}</h3>
-        <p>Votes: {this.state.votesToSkip}</p>
-        <p>Guest Can Pause: {this.state.guestCanPause.toString()}</p>
-        <p>is Host: {this.state.isHost.toString()}</p>
-      </div>
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <Typography variant="h5" component="h5">
+            Code: {this.roomCode}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h5" component="h5">
+            Votes: {this.state.votesToSkip}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h5" component="h5">
+            Guest Can Pause: {this.state.guestCanPause.toString()}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h5" component="h5">
+            Host: {this.state.isHost.toString()}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button
+            onClick={this.leaveBtnPressed}
+            variant="contained"
+            color="secondary"
+          >
+            Leave Room
+          </Button>
+        </Grid>
+      </Grid>
     );
   }
 }

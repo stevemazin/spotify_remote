@@ -30,7 +30,6 @@ export default class CreateRoomPage extends Component {
 
   handleRoomBtnPressed = () => {
     // Send a request to the endpoint
-    console.log(this.state);
 
     const requestOptions = {
       method: "POST",
